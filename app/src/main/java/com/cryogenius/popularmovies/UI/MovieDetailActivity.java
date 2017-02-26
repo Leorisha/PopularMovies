@@ -48,11 +48,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void toolbarTextAppernce() {
-        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.collapsedappbar);
-        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.expandedappbar);
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -90,7 +85,6 @@ public class MovieDetailActivity extends AppCompatActivity {
             collapsingToolbarLayout.setTitle(event.getSelectedMovie().getOriginalTitle());
             actionBar.setTitle(event.getSelectedMovie().getOriginalTitle());
 
-            toolbarTextAppernce();
 
             Context context = moviePoster.getContext();
                 //url build

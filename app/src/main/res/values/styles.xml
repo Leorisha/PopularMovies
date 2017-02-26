@@ -8,16 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="expandedappbar" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textSize">28sp
-        </item>
-        <item name="android:textColor">@android:color/primary_text_dark</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="collapsedappbar" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@android:color/primary_text_dark</item>
+    <style name="TextAppearance.Design.CollapsingToolbar.Expanded.Shadow">
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowRadius">16</item>
+        <item name="android:shadowColor">@android:color/black</item>
     </style>
 
 </resources>
