@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+    android:id="@+id/action_filter"
+    android:orderInCategory="1"
+    android:icon="@drawable/ic_filter_list"
+    app:showAsAction="always">
+         <menu
+             android:id="@+id/checkable_group_menu">
+             <group
+                 android:id="@+id/check_group"
+                 android:checkableBehavior="single">
+                 <item
+                     android:id="@+id/action_filter_popular"
+                     android:orderInCategory="1"
+                     android:title="@string/action_filter_by_popularity"
+                     app:showAsAction="never"
+                     android:checked="true"/>
+                 <item
+                     android:id="@+id/action_filter_top_rated"
+                     android:orderInCategory="1"
+                     android:title="@string/action_filter_by_top_rated"
+                     app:showAsAction="never"/>
+             </group>
+         </menu>
+    </item>
+</menu>
