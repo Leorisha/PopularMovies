@@ -42,20 +42,31 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
         this.errorMessage = (TextView)findViewById(R.id.tv_error_message);
         this.loadingCircle = (ProgressBar)findViewById(R.id.pb_loading_indicator);
         this.movieGridView = (RecyclerView)findViewById(R.id.rv_movie_grid);
-        GridLayoutManager layoutManager = new GridLayoutManager(this,2);
-        movieGridView.setLayoutManager(layoutManager);
-        movieGridView.setHasFixedSize(true);
+
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
         showLoader();
 
         EventBus.getInstance().register(this);
         setSubtitleOnActionBar(getString(R.string.app_name),null);
         EventBus.getInstance().post(new GetSelectedMovieTypeAction());
+    }
+
+    public void onWindowFocusChanged(boolean hasFocus) {
+        // TODO Auto-generated method stub
+        super.onWindowFocusChanged(hasFocus);
+        updateSizeInfo();
+    }
+    private void updateSizeInfo() {
+        float density  = getResources().getDisplayMetrics().density;
+        int width = (int) Math.abs(movieGridView.getWidth()/density);
+        GridLayoutManager layoutManager = new GridLayoutManager(this,Math.abs(width/150));
+        movieGridView.setLayoutManager(layoutManager);
+        movieGridView.setHasFixedSize(true);
     }
 
     @Override
