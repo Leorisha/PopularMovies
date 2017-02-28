@@ -84,7 +84,7 @@ public class MoviesManager {
 
     @Subscribe
     public void onGetPopularMoviesAction(final GetPopularMoviesAction action) {
-        MoviesAPI.Factory.getInstance().getPopularMoviesFromApi(action.getApiKey()).enqueue(new Callback<MovieList>() {
+        MoviesAPI.Factory.getInstance().getPopularMoviesFromApi(BuildConfig.API_KEY).enqueue(new Callback<MovieList>() {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                 MoviesManager.getInstance().selectedMovieType = MovieListType.POPULAR;
@@ -101,10 +101,7 @@ public class MoviesManager {
 
     @Subscribe
     public void onGetTopRatedMoviesAction(final GetTopRatedMoviesAction action) {
-
-        String apiKey = BuildConfig.APPLICATION_ID
-
-        MoviesAPI.Factory.getInstance().getTopMoviesFromApi().enqueue(new Callback<MovieList>() {
+        MoviesAPI.Factory.getInstance().getTopMoviesFromApi(BuildConfig.API_KEY).enqueue(new Callback<MovieList>() {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                 MoviesManager.getInstance().selectedMovieType = MovieListType.TOP_RATED;
