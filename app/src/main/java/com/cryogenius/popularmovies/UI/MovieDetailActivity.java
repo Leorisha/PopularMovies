@@ -3,8 +3,10 @@ package com.cryogenius.popularmovies.UI;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +24,7 @@ import com.squareup.picasso.Picasso;
 public class MovieDetailActivity extends AppCompatActivity {
 
     private int selectedIndex;
+    private CollapsingToolbarLayout collapsingToolbarLayout = null;
 
     TextView moviePlotDetail;
     TextView userRating;
@@ -72,23 +75,25 @@ public class MovieDetailActivity extends AppCompatActivity {
     public void onMovieDetailEvent(final MovieDetailEvent event) {
 
         if(event.getSelectedMovie() != null){
-            if(getSupportActionBar() != null){
-                ActionBar actionBar = getSupportActionBar();
-                actionBar.setTitle(event.getSelectedMovie().getOriginalTitle());
 
-                if (!event.getSelectedMovie().getOriginalTitle().equals(event.getSelectedMovie().getTitle())){
-                    actionBar.setSubtitle(event.getSelectedMovie().getTitle());
-                }
+            Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+            setSupportActionBar(toolbar);
+            ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(true);
 
-                Context context = moviePoster.getContext();
+            collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
+            collapsingToolbarLayout.setTitle(event.getSelectedMovie().getOriginalTitle());
+            actionBar.setTitle(event.getSelectedMovie().getOriginalTitle());
+
+
+            Context context = moviePoster.getContext();
                 //url build
-                String posterURL = context.getString(R.string.image_url)+event.getSelectedMovie().getPosterPath();
-                Picasso.with(context).load(posterURL).into(moviePoster);
+            String posterURL = context.getString(R.string.image_url_detail)+event.getSelectedMovie().getPosterPath();
+            Picasso.with(context).load(posterURL).into(moviePoster);
 
-                releaseDate.setText(event.getSelectedMovie().getReleaseDate().split("-")[0]);
-                moviePlotDetail.setText(event.getSelectedMovie().getOverview());
-                userRating.setText(event.getSelectedMovie().getVoteAverage()+"/10");
-            }
+            releaseDate.setText(event.getSelectedMovie().getReleaseDate().split("-")[0]);
+            moviePlotDetail.setText(event.getSelectedMovie().getOverview());
+            userRating.setText(event.getSelectedMovie().getVoteAverage()+"/10");
         }
         else {
             //TODO: error

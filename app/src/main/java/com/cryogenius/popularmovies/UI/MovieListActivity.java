@@ -112,7 +112,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
         showLoader();
 
         if (this.isOnline()){
-            EventBus.getInstance().post(new GetPopularMoviesAction(getString(R.string.api_KEY)));
+            EventBus.getInstance().post(new GetPopularMoviesAction());
         }
         else {
             this.displayErrorMessage();
@@ -137,7 +137,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
         showLoader();
 
         if (this.isOnline()){
-            EventBus.getInstance().post(new GetTopRatedMoviesAction(getString(R.string.api_KEY)));
+            EventBus.getInstance().post(new GetTopRatedMoviesAction());
         }
         else {
             this.displayErrorMessage();
