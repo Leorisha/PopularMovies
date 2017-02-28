@@ -6,6 +6,7 @@ import com.cryogenius.popularmovies.API.Models.Movie;
 import com.cryogenius.popularmovies.API.Models.MovieList;
 import com.cryogenius.popularmovies.API.Models.MovieListType;
 import com.cryogenius.popularmovies.API.MoviesAPI;
+import com.cryogenius.popularmovies.BuildConfig;
 import com.cryogenius.popularmovies.Bus.EventBus;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetMovieDetailAction;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetPopularMoviesAction;
@@ -100,7 +101,10 @@ public class MoviesManager {
 
     @Subscribe
     public void onGetTopRatedMoviesAction(final GetTopRatedMoviesAction action) {
-        MoviesAPI.Factory.getInstance().getTopMoviesFromApi(action.getApiKey()).enqueue(new Callback<MovieList>() {
+
+        String apiKey = BuildConfig.APPLICATION_ID
+
+        MoviesAPI.Factory.getInstance().getTopMoviesFromApi().enqueue(new Callback<MovieList>() {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                 MoviesManager.getInstance().selectedMovieType = MovieListType.TOP_RATED;

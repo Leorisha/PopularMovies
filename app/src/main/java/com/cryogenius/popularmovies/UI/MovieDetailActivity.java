@@ -88,7 +88,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
             Context context = moviePoster.getContext();
                 //url build
-            String posterURL = context.getString(R.string.image_url)+event.getSelectedMovie().getPosterPath();
+            String posterURL = context.getString(R.string.image_url_detail)+event.getSelectedMovie().getPosterPath();
             Picasso.with(context).load(posterURL).into(moviePoster);
 
             releaseDate.setText(event.getSelectedMovie().getReleaseDate().split("-")[0]);
