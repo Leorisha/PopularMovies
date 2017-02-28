@@ -6,17 +6,7 @@ package com.cryogenius.popularmovies.Bus.Messages.Actions;
 
 public class GetPopularMoviesAction {
 
-    private String apiKey;
 
-    public GetPopularMoviesAction(String apiKey){
-        this.apiKey = apiKey;
-    }
-
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
+    public GetPopularMoviesAction(){
     }
 }
