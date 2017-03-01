@@ -6,6 +6,7 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -26,12 +27,14 @@ public interface MoviesAPI {
 
     @GET("/movie/{id}/videos")
     Call<MovieList> getTrailersOfMovieFromApi (
-            @Query("id") String movieId
+            @Path("id") String movieId,
+            @Query("api_key") String apiKey
     );
 
     @GET("/movie/{id}/reviews")
     Call<MovieList> getReviewsOfMovieFromApi (
-            @Query("d") String movieId
+            @Path("id") String movieId,
+            @Query("api_key") String apiKey
     );
 
     class Factory {
