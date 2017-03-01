@@ -10,8 +10,11 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cryogenius.popularmovies.API.Models.Movie;
 import com.cryogenius.popularmovies.Bus.EventBus;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetMovieDetailAction;
+import com.cryogenius.popularmovies.Bus.Messages.Actions.GetMovieDetailTrailerListAction;
+import com.cryogenius.popularmovies.Bus.Messages.Actions.GetMoviewDetailReviewsListAction;
 import com.cryogenius.popularmovies.Bus.Messages.Events.MovieDetailEvent;
 import com.cryogenius.popularmovies.R;
 import com.squareup.otto.Subscribe;
@@ -24,6 +27,7 @@ import com.squareup.picasso.Picasso;
 public class MovieDetailActivity extends AppCompatActivity {
 
     private int selectedIndex;
+    private Movie selectedMovie;
     private CollapsingToolbarLayout collapsingToolbarLayout = null;
 
     TextView moviePlotDetail;
@@ -75,6 +79,10 @@ public class MovieDetailActivity extends AppCompatActivity {
     public void onMovieDetailEvent(final MovieDetailEvent event) {
 
         if(event.getSelectedMovie() != null){
+            EventBus.getInstance().post(new GetMovieDetailTrailerListAction(event.getSelectedMovie().getId()));
+            EventBus.getInstance().post(new GetMoviewDetailReviewsListAction(event.getSelectedMovie().getId()));
+
+            this.selectedMovie = event.getSelectedMovie();
 
             Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
             setSupportActionBar(toolbar);

@@ -1,6 +1,8 @@
 package com.cryogenius.popularmovies.API;
 
 import com.cryogenius.popularmovies.API.Models.MovieList;
+import com.cryogenius.popularmovies.API.Models.MovieReviewsList;
+import com.cryogenius.popularmovies.API.Models.MovieTrailerList;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -26,13 +28,13 @@ public interface MoviesAPI {
     );
 
     @GET("/movie/{id}/videos")
-    Call<MovieList> getTrailersOfMovieFromApi (
+    Call<MovieTrailerList> getTrailersOfMovieFromApi (
             @Path("id") String movieId,
             @Query("api_key") String apiKey
     );
 
     @GET("/movie/{id}/reviews")
-    Call<MovieList> getReviewsOfMovieFromApi (
+    Call<MovieReviewsList> getReviewsOfMovieFromApi (
             @Path("id") String movieId,
             @Query("api_key") String apiKey
     );

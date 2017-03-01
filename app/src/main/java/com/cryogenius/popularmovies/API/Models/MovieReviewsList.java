@@ -1,9 +1,10 @@
 
 package com.cryogenius.popularmovies.API.Models;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class MovieReviewsList {
 
@@ -15,7 +16,7 @@ public class MovieReviewsList {
     private Long page;
     @SerializedName("results")
     @Expose
-    private List<Result> results = null;
+    private List<MovieReview> results = null;
     @SerializedName("total_pages")
     @Expose
     private Long totalPages;
@@ -39,11 +40,11 @@ public class MovieReviewsList {
         this.page = page;
     }
 
-    public List<Result> getResults() {
+    public List<MovieReview> getResults() {
         return results;
     }
 
-    public void setResults(List<Result> results) {
+    public void setResults(List<MovieReview> results) {
         this.results = results;
     }
 

@@ -5,10 +5,14 @@ import android.util.Log;
 import com.cryogenius.popularmovies.API.Models.Movie;
 import com.cryogenius.popularmovies.API.Models.MovieList;
 import com.cryogenius.popularmovies.API.Models.MovieListType;
+import com.cryogenius.popularmovies.API.Models.MovieReviewsList;
+import com.cryogenius.popularmovies.API.Models.MovieTrailerList;
 import com.cryogenius.popularmovies.API.MoviesAPI;
 import com.cryogenius.popularmovies.BuildConfig;
 import com.cryogenius.popularmovies.Bus.EventBus;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetMovieDetailAction;
+import com.cryogenius.popularmovies.Bus.Messages.Actions.GetMovieDetailTrailerListAction;
+import com.cryogenius.popularmovies.Bus.Messages.Actions.GetMoviewDetailReviewsListAction;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetPopularMoviesAction;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetSelectedMovieTypeAction;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetTopRatedMoviesAction;
@@ -119,5 +123,37 @@ public class MoviesManager {
     @Subscribe
     public void onGetSelectedMovieTypeAction (final GetSelectedMovieTypeAction action) {
         EventBus.getInstance().post(new SelectedMovieTypeEvent(this.selectedMovieType));
+    }
+
+    @Subscribe
+    public void onGetMovieDetailTrailerListAction(final GetMovieDetailTrailerListAction action) {
+        MoviesAPI.Factory.getInstance().getTrailersOfMovieFromApi(Integer.toString(action.getSelectedIndex()),BuildConfig.API_KEY).enqueue(new Callback<MovieTrailerList>() {
+            @Override
+            public void onResponse(Call<MovieTrailerList> call, Response<MovieTrailerList> response) {
+                Log.d("DEBUG","onGetMovieDetailTrailerListAction - success");
+                Log.d("DEBUG",response.toString());
+            }
+
+            @Override
+            public void onFailure(Call<MovieTrailerList> call, Throwable t) {
+                Log.d("DEBUG","onGetMovieDetailTrailerListAction - failure");
+            }
+        });
+    }
+
+    @Subscribe
+    public void onGetMovieDetailReviewsListAction(final GetMoviewDetailReviewsListAction action) {
+        MoviesAPI.Factory.getInstance().getReviewsOfMovieFromApi(Integer.toString(action.getSelectedIndex()),BuildConfig.API_KEY).enqueue(new Callback<MovieReviewsList>() {
+            @Override
+            public void onResponse(Call<MovieReviewsList> call, Response<MovieReviewsList> response) {
+                Log.d("DEBUG","onGetMovieDetailTrailerListAction - success");
+                Log.d("DEBUG",response.toString());
+            }
+
+            @Override
+            public void onFailure(Call<MovieReviewsList> call, Throwable t) {
+                Log.d("DEBUG","onGetMovieDetailTrailerListAction - failure");
+            }
+        });
     }
 }

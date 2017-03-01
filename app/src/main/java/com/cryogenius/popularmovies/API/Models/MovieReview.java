@@ -4,7 +4,7 @@ package com.cryogenius.popularmovies.API.Models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Result {
+public class MovieReview {
 
     @SerializedName("id")
     @Expose
