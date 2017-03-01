@@ -24,6 +24,16 @@ public interface MoviesAPI {
             @Query("api_key") String apiKey
     );
 
+    @GET("/movie/{id}/videos")
+    Call<MovieList> getTrailersOfMovieFromApi (
+            @Query("id") String movieId
+    );
+
+    @GET("/movie/{id}/reviews")
+    Call<MovieList> getReviewsOfMovieFromApi (
+            @Query("d") String movieId
+    );
+
     class Factory {
 
         private static MoviesAPI api;
