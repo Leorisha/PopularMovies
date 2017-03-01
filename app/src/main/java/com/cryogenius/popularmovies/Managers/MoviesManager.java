@@ -17,6 +17,8 @@ import com.cryogenius.popularmovies.Bus.Messages.Actions.GetPopularMoviesAction;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetSelectedMovieTypeAction;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetTopRatedMoviesAction;
 import com.cryogenius.popularmovies.Bus.Messages.Events.MovieDetailEvent;
+import com.cryogenius.popularmovies.Bus.Messages.Events.MovieDetailReviewsEvent;
+import com.cryogenius.popularmovies.Bus.Messages.Events.MovieDetailTrailersEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.PopularMoviesEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.SelectedMovieTypeEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.TopRatedMoviesEvent;
@@ -131,7 +133,7 @@ public class MoviesManager {
             @Override
             public void onResponse(Call<MovieTrailerList> call, Response<MovieTrailerList> response) {
                 Log.d("DEBUG","onGetMovieDetailTrailerListAction - success");
-                Log.d("DEBUG",response.toString());
+                EventBus.getInstance().post(new MovieDetailTrailersEvent(response.body()));
             }
 
             @Override
@@ -146,13 +148,13 @@ public class MoviesManager {
         MoviesAPI.Factory.getInstance().getReviewsOfMovieFromApi(Integer.toString(action.getSelectedIndex()),BuildConfig.API_KEY).enqueue(new Callback<MovieReviewsList>() {
             @Override
             public void onResponse(Call<MovieReviewsList> call, Response<MovieReviewsList> response) {
-                Log.d("DEBUG","onGetMovieDetailTrailerListAction - success");
-                Log.d("DEBUG",response.toString());
+                Log.d("DEBUG","onGetMovieDetailReviewsListAction - success");
+                EventBus.getInstance().post(new MovieDetailReviewsEvent(response.body()));
             }
 
             @Override
             public void onFailure(Call<MovieReviewsList> call, Throwable t) {
-                Log.d("DEBUG","onGetMovieDetailTrailerListAction - failure");
+                Log.d("DEBUG","onGetMovieDetailReviewsListAction - failure");
             }
         });
     }
