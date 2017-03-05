@@ -7,4 +7,7 @@
     <string name="image_url">http://image.tmdb.org/t/p/w185</string>
     <string name="image_url_detail">http://image.tmdb.org/t/p/w342</string>
     <string name="api_base_url">https://api.themoviedb.org/3/</string>
+    <string name="tab_info">Info</string>
+    <string name="tab_trailers">Trailers</string>
+    <string name="tab_reviews">Reviews</string>
 </resources>

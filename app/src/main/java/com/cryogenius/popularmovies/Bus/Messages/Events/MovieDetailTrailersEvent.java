@@ -14,11 +14,11 @@ public class MovieDetailTrailersEvent {
         this.trailersList = trailersList;
     }
 
-    public MovieTrailerList getSelectedMovie() {
+    public MovieTrailerList getTrailersList() {
         return trailersList;
     }
 
-    public void setSelectedMovie(MovieTrailerList trailersList) {
+    public void setTrailersList(MovieTrailerList trailersList) {
         this.trailersList = trailersList;
     }
 }

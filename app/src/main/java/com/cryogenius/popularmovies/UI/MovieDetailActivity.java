@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,7 +30,7 @@ import com.squareup.picasso.Picasso;
  * Created by Ana Neto on 26/01/2017.
  */
 
-public class MovieDetailActivity extends AppCompatActivity {
+public class MovieDetailActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
 
     private int selectedIndex;
     private Movie selectedMovie;
@@ -37,20 +39,20 @@ public class MovieDetailActivity extends AppCompatActivity {
     private int apiRequestCounter = 0;
     private CollapsingToolbarLayout collapsingToolbarLayout = null;
 
-    TextView moviePlotDetail;
-    TextView userRating;
-    TextView releaseDate;
-    ImageView moviePoster;
+    private TextView moviePlotDetail;
+    private TextView userRating;
+    private TextView releaseDate;
+    private ImageView moviePoster;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        moviePlotDetail = (TextView) findViewById(R.id.tv_movie_detail_synopsis);
-        userRating = (TextView) findViewById(R.id.tv_movie_detail_user_rating);
-        releaseDate = (TextView) findViewById(R.id.tv_movie_detail_duration);
-        moviePoster = (ImageView) findViewById(R.id.iv_movie_detail_poster);
+        this.tabLayout = (TabLayout)findViewById(R.id.tab_layout);
+        this.viewPager = (ViewPager)findViewById(R.id.pager);
 
         Intent intentThatStartedThisActivity = getIntent();
         if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
@@ -104,12 +106,22 @@ public class MovieDetailActivity extends AppCompatActivity {
     @Subscribe
     public void onMovieDetailReviewsEvent(final MovieDetailReviewsEvent event) {
         apiRequestCounter--;
+
+        if (event.getReviewsList() != null){
+            this.selectedMovieReviews = event.getReviewsList();
+        }
+
         this.populateTheActivity();
     }
 
     @Subscribe
     public void onMovieDetailTrailersEvent(final MovieDetailTrailersEvent event) {
         apiRequestCounter--;
+
+        if (event.getTrailersList() != null){
+            this.selectedMovieTrailers = event.getTrailersList();
+        }
+
         this.populateTheActivity();
     }
 
@@ -134,5 +146,20 @@ public class MovieDetailActivity extends AppCompatActivity {
             moviePlotDetail.setText(this.selectedMovie.getOverview());
             userRating.setText(this.selectedMovie.getVoteAverage() + "/10");
         }
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
     }
 }
