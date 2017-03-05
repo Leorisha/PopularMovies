@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.cryogenius.popularmovies.API.Models.Movie;
 import com.cryogenius.popularmovies.API.Models.MovieReviewsList;
@@ -39,9 +38,9 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
     private int apiRequestCounter = 0;
     private CollapsingToolbarLayout collapsingToolbarLayout = null;
 
-    private TextView moviePlotDetail;
-    private TextView userRating;
-    private TextView releaseDate;
+    //private TextView moviePlotDetail;
+    //private TextView userRating;
+    //private TextView releaseDate;
     private ImageView moviePoster;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -51,14 +50,17 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        moviePlotDetail = (TextView) findViewById(R.id.tv_movie_detail_synopsis);
-        userRating = (TextView) findViewById(R.id.tv_movie_detail_user_rating);
-        releaseDate = (TextView) findViewById(R.id.tv_movie_detail_duration);
+        //moviePlotDetail = (TextView) findViewById(R.id.tv_movie_detail_synopsis);
+        //userRating = (TextView) findViewById(R.id.tv_movie_detail_user_rating);
+        //releaseDate = (TextView) findViewById(R.id.tv_movie_detail_duration);
         moviePoster = (ImageView) findViewById(R.id.iv_movie_detail_poster);
 
         tabLayout = (TabLayout)findViewById(R.id.tab_layout);
         viewPager = (ViewPager)findViewById(R.id.pager);
+        PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(adapter);
 
+        tabLayout.addOnTabSelectedListener(this);
 
         Intent intentThatStartedThisActivity = getIntent();
         if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
@@ -148,15 +150,15 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
             String posterURL = context.getString(R.string.image_url_detail) + this.selectedMovie.getPosterPath();
             Picasso.with(context).load(posterURL).into(moviePoster);
 
-            releaseDate.setText(this.selectedMovie.getReleaseDate().split("-")[0]);
-            moviePlotDetail.setText(this.selectedMovie.getOverview());
-            userRating.setText(this.selectedMovie.getVoteAverage() + "/10");
+            //releaseDate.setText(this.selectedMovie.getReleaseDate().split("-")[0]);
+            //moviePlotDetail.setText(this.selectedMovie.getOverview());
+            //userRating.setText(this.selectedMovie.getVoteAverage() + "/10");
         }
     }
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-
+        viewPager.setCurrentItem(tab.getPosition());
     }
 
     @Override

@@ -30,13 +30,13 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         //Returning the current tabs
         switch (position) {
             case 0:
-                Tab1 tab1 = new Tab1();
+                InfoFragment tab1 = new InfoFragment();
                 return tab1;
             case 1:
-                Tab2 tab2 = new Tab2();
+                TrailersFragment tab2 = new TrailersFragment();
                 return tab2;
             case 2:
-                Tab3 tab3 = new Tab3();
+                ReviewsFragment tab3 = new ReviewsFragment();
                 return tab3;
             default:
                 return null;
