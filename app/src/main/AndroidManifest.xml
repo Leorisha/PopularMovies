@@ -22,7 +22,7 @@
         <activity
             android:name=".UI.MovieDetailActivity"
             android:launchMode="standard"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName="com.cryogenius.popularmovies.UI.MovieListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

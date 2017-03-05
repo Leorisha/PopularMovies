@@ -18,12 +18,13 @@
             android:layout_height="match_parent"
             android:background="@color/colorPrimary"
             android:fitsSystemWindows="true"
+            android:foregroundTint="@android:color/white"
             app:contentScrim="@color/colorPrimary"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="48dp"
             app:expandedTitleTextAppearance="@style/TextAppearance.Design.CollapsingToolbar.Expanded.Shadow"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:statusBarScrim="@android:color/black">
+            app:collapsedTitleTextAppearance="@style/AppTheme.NoActionBar"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <ImageView
                 android:id="@+id/iv_movie_detail_poster"
@@ -70,6 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimary"
+                app:tabTextColor="@android:color/white"
                 android:elevation="6dp"
                 android:id="@+id/tab_layout"
                 android:paddingTop="16dp">

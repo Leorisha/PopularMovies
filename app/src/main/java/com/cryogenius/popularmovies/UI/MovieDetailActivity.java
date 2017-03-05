@@ -51,8 +51,14 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        this.tabLayout = (TabLayout)findViewById(R.id.tab_layout);
-        this.viewPager = (ViewPager)findViewById(R.id.pager);
+        moviePlotDetail = (TextView) findViewById(R.id.tv_movie_detail_synopsis);
+        userRating = (TextView) findViewById(R.id.tv_movie_detail_user_rating);
+        releaseDate = (TextView) findViewById(R.id.tv_movie_detail_duration);
+        moviePoster = (ImageView) findViewById(R.id.iv_movie_detail_poster);
+
+        tabLayout = (TabLayout)findViewById(R.id.tab_layout);
+        viewPager = (ViewPager)findViewById(R.id.pager);
+
 
         Intent intentThatStartedThisActivity = getIntent();
         if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
