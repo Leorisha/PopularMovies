@@ -99,7 +99,6 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
                 viewAdapter.setSelectedId(event.getSelectedMovie().getId());
             }
 
-
         } else {
             //TODO: error
         }

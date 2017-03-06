@@ -13,7 +13,7 @@ public class MovieTrailerList {
     private Long id;
     @SerializedName("results")
     @Expose
-    private List<MovieTrailer> results = null;
+    private List<MovieTrailer> trailers = null;
 
     public Long getId() {
         return id;
@@ -23,12 +23,12 @@ public class MovieTrailerList {
         this.id = id;
     }
 
-    public List<MovieTrailer> getResults() {
-        return results;
+    public List<MovieTrailer> getTrailers() {
+        return trailers;
     }
 
-    public void setResults(List<MovieTrailer> results) {
-        this.results = results;
+    public void setResults(List<MovieTrailer> trailers) {
+        this.trailers = trailers;
     }
 
 }

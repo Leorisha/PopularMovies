@@ -27,13 +27,13 @@ public interface MoviesAPI {
             @Query("api_key") String apiKey
     );
 
-    @GET("/movie/{id}/videos")
+    @GET("movie/{id}/videos")
     Call<MovieTrailerList> getTrailersOfMovieFromApi (
             @Path("id") String movieId,
             @Query("api_key") String apiKey
     );
 
-    @GET("/movie/{id}/reviews")
+    @GET("movie/{id}/reviews")
     Call<MovieReviewsList> getReviewsOfMovieFromApi (
             @Path("id") String movieId,
             @Query("api_key") String apiKey
