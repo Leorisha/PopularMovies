@@ -4,18 +4,18 @@ package com.cryogenius.popularmovies.UI;
  * Created by Ana Neto on 05/03/2017.
  */
 
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
-/**
- * Created by Belal on 2/3/2016.
- */
-//Extending FragmentStatePagerAdapter
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
-    //integer to count number of tabs
-    int tabCount;
+    private int tabCount;
+    private int selectedId;
+    private int selectedIndex;
+    private InfoFragment tab1;
+    private TrailersFragment tab2;
+    private ReviewsFragment tab3;
 
     //Constructor to the class
     public PagerAdapter(FragmentManager fm, int tabCount) {
@@ -30,13 +30,16 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         //Returning the current tabs
         switch (position) {
             case 0:
-                InfoFragment tab1 = new InfoFragment();
+                tab1 = new InfoFragment();
+                tab1.setSelectedIndex(selectedIndex);
                 return tab1;
             case 1:
-                TrailersFragment tab2 = new TrailersFragment();
+                tab2  = new TrailersFragment();
+                tab2.setSelectedMovieId(selectedId);
                 return tab2;
             case 2:
-                ReviewsFragment tab3 = new ReviewsFragment();
+                tab3 = new ReviewsFragment();
+                tab3.setSelectedMovieId(selectedId);
                 return tab3;
             default:
                 return null;
@@ -47,5 +50,13 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return tabCount;
+    }
+
+    public void setSelectedIndex(int selectedIndex) {
+        this.selectedIndex = selectedIndex;
+    }
+
+    public void setSelectedId(int selectedId) {
+        this.selectedId = selectedId;
     }
 }
