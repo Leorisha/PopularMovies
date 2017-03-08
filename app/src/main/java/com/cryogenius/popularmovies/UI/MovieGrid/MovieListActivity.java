@@ -1,4 +1,4 @@
-package com.cryogenius.popularmovies.UI;
+package com.cryogenius.popularmovies.UI.MovieGrid;
 
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +24,7 @@ import com.cryogenius.popularmovies.Bus.Messages.Events.PopularMoviesEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.SelectedMovieTypeEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.TopRatedMoviesEvent;
 import com.cryogenius.popularmovies.R;
+import com.cryogenius.popularmovies.UI.MovieDetail.MovieDetailActivity;
 import com.squareup.otto.Subscribe;
 
 public class MovieListActivity extends AppCompatActivity  implements GridItemClickListener {

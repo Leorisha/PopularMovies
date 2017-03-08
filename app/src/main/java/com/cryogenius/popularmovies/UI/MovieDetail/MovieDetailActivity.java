@@ -1,4 +1,4 @@
-package com.cryogenius.popularmovies.UI;
+package com.cryogenius.popularmovies.UI.MovieDetail;
 
 import android.content.Context;
 import android.content.Intent;
@@ -59,8 +59,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
         super.onResume();
         if (this.selectedIndex >= 0) {
 
-            viewAdapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-            viewAdapter.setSelectedId(this.selectedIndex);
+            viewAdapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(),this.selectedIndex);
             viewPager.setAdapter(viewAdapter);
             tabLayout.addOnTabSelectedListener(this);
 

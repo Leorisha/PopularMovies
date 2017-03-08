@@ -1,4 +1,4 @@
-package com.cryogenius.popularmovies.UI;
+package com.cryogenius.popularmovies.UI.MovieDetail;
 
 /**
  * Created by Ana Neto on 05/03/2017.
@@ -18,10 +18,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     private ReviewsFragment tab3;
 
     //Constructor to the class
-    public PagerAdapter(FragmentManager fm, int tabCount) {
+    public PagerAdapter(FragmentManager fm, int tabCount, int selectedIndex) {
         super(fm);
         //Initializing tab count
         this.tabCount= tabCount;
+        this.selectedIndex = selectedIndex;
     }
 
     //Overriding method getItem
