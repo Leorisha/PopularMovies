@@ -12,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 
 import com.cryogenius.popularmovies.Bus.EventBus;
-import com.cryogenius.popularmovies.Bus.Messages.Actions.GetMovieDetailAction;
 import com.cryogenius.popularmovies.Bus.Messages.Events.MovieDetailEvent;
 import com.cryogenius.popularmovies.R;
 import com.squareup.otto.Subscribe;
@@ -65,7 +64,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
             viewPager.setAdapter(viewAdapter);
             tabLayout.addOnTabSelectedListener(this);
 
-            EventBus.getInstance().post(new GetMovieDetailAction(this.selectedIndex));
+            //EventBus.getInstance().post(new GetMovieDetailAction(this.selectedIndex));
         } else {
             //TODO: display error
         }
