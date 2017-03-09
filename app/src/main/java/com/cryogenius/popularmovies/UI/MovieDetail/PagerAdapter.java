@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.cryogenius.popularmovies.UI.MovieDetail.Reviews.ReviewsFragment;
+
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
     private int tabCount;

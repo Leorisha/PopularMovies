@@ -10,4 +10,6 @@
     <string name="tab_info">Info</string>
     <string name="tab_trailers">Trailers</string>
     <string name="tab_reviews">Reviews</string>
+    <string name="tab_reviews_empty">There are no reviews for this movie.</string>
+    <string name="tab_trailers_empty">There are no trailers for this movie.</string>
 </resources>
