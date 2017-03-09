@@ -62,6 +62,23 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
             viewAdapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(),this.selectedIndex);
             viewPager.setAdapter(viewAdapter);
             tabLayout.addOnTabSelectedListener(this);
+            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    TabLayout.Tab tab = tabLayout.getTabAt(position);
+                    tab.select();
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
 
             //EventBus.getInstance().post(new GetMovieDetailAction(this.selectedIndex));
         } else {
