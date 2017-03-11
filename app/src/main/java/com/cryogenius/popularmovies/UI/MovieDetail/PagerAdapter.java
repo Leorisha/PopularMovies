@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.cryogenius.popularmovies.UI.MovieDetail.Reviews.ReviewsFragment;
+import com.cryogenius.popularmovies.UI.MovieDetail.Trailers.TrailersFragment;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
@@ -61,5 +62,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     public void setSelectedId(int selectedId) {
         this.selectedId = selectedId;
+        if(tab2 != null) {
+            tab2.setSelectedMovieId(selectedId);
+        }
+        if (tab3 != null) {
+            tab3.setSelectedMovieId(selectedId);
+        }
     }
 }
