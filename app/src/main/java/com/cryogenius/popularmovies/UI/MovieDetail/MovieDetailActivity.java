@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.cryogenius.popularmovies.Bus.EventBus;
@@ -29,6 +31,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
     private ImageView moviePoster;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private FloatingActionButton favoriteButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +47,20 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
         moviePoster = (ImageView) findViewById(R.id.iv_movie_detail_poster);
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.pager);
-
-
+        favoriteButton = (FloatingActionButton)findViewById(R.id.favorite_button);
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!favoriteButton.isSelected()){
+                    favoriteButton.setSelected(true);
+                    favoriteButton.setImageDrawable( getResources().getDrawable(R.drawable.ic_favorite_selected));
+                }
+                else {
+                    favoriteButton.setSelected(false);
+                    favoriteButton.setImageDrawable( getResources().getDrawable(R.drawable.ic_favorite_unselected));
+                }
+            }
+        });
     }
 
     @Override
