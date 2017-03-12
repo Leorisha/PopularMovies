@@ -13,17 +13,6 @@ class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewViewHolde
 
     private MovieReviewsList reviewsList;
 
-    public static class ReviewViewHolder extends RecyclerView.ViewHolder {
-        TextView reviewContent;
-        TextView authorName;
-
-        ReviewViewHolder(View itemView) {
-            super(itemView);
-            reviewContent = (TextView)itemView.findViewById(R.id.info_text);
-            authorName = (TextView)itemView.findViewById(R.id.author_name);
-        }
-    }
-
     // Provide a suitable constructor (depends on the kind of dataset)
     public ReviewsAdapter(MovieReviewsList reviewsList) {
         this.reviewsList = reviewsList;
@@ -31,7 +20,7 @@ class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewViewHolde
 
     // Create new views (invoked by the layout manager)
     @Override
-    public ReviewsAdapter.ReviewViewHolder onCreateViewHolder(ViewGroup parent,
+    public ReviewViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.review_item_layout, parent, false);
         ReviewViewHolder pvh = new ReviewViewHolder(v);
@@ -55,6 +44,17 @@ class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewViewHolde
         }
         else{
             return 0;
+        }
+    }
+
+    class ReviewViewHolder extends RecyclerView.ViewHolder {
+        TextView reviewContent;
+        TextView authorName;
+
+        ReviewViewHolder(View itemView) {
+            super(itemView);
+            reviewContent = (TextView)itemView.findViewById(R.id.info_text);
+            authorName = (TextView)itemView.findViewById(R.id.author_name);
         }
     }
 }

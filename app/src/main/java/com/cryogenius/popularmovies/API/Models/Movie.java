@@ -1,12 +1,15 @@
 
 package com.cryogenius.popularmovies.API.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Movie {
+public class Movie implements Parcelable {
 
     @SerializedName("poster_path")
     @Expose
@@ -163,4 +166,56 @@ public class Movie {
         this.voteAverage = voteAverage;
     }
 
+
+    //Parcelable implementation
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(posterPath);
+        out.writeByte((byte) (adult ? 1 : 0));
+        out.writeString(overview);
+        out.writeList(genreIds);
+        out.writeString(releaseDate);
+        out.writeInt(id);
+        out.writeString(originalTitle);
+        out.writeString(originalLanguage);
+        out.writeString(title);
+        out.writeString(backdropPath);
+        out.writeDouble(popularity);
+        out.writeInt(voteCount);
+        out.writeByte((byte) (video ? 1 : 0));
+        out.writeDouble(voteAverage);
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR
+            = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    private Movie(Parcel in) {
+        posterPath = in.readString();
+        adult =in.readByte() != 0;
+        overview = in.readString();
+        genreIds = (List<Integer>) in.readSerializable();
+        releaseDate = in.readString();
+        id = in.readInt();
+        originalTitle = in.readString();
+        originalLanguage = in.readString();
+        title = in.readString();
+        backdropPath = in.readString();
+        popularity = in.readDouble();
+        voteCount = in.readInt();
+        video =in.readByte() != 0;
+        voteAverage = in.readDouble();
+    }
 }

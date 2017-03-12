@@ -13,42 +13,32 @@ import com.cryogenius.popularmovies.R;
  * Created by Ana Neto on 11/03/2017.
  */
 
-class TrailersAdapter extends RecyclerView.Adapter<com.cryogenius.popularmovies.UI.MovieDetail.Trailers.TrailersAdapter.ReviewViewHolder> {
+class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.TrailersViewHolder> {
 
     private MovieTrailerList trailersList;
-
-    public static class ReviewViewHolder extends RecyclerView.ViewHolder {
-        TextView trailerName;
-
-        ReviewViewHolder(View itemView) {
-            super(itemView);
-            trailerName = (TextView)itemView.findViewById(R.id.tv_trailer_name);
-        }
-    }
+    final private TrailerItemClickListener mOnClickListener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public TrailersAdapter(MovieTrailerList trailersList) {
+    public TrailersAdapter(MovieTrailerList trailersList,TrailerItemClickListener listener) {
+
         this.trailersList = trailersList;
+        mOnClickListener = listener;
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public com.cryogenius.popularmovies.UI.MovieDetail.Trailers.TrailersAdapter.ReviewViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                                                                  int viewType) {
+    public TrailersViewHolder onCreateViewHolder(ViewGroup parent,int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.trailers_item_layout, parent, false);
-        com.cryogenius.popularmovies.UI.MovieDetail.Trailers.TrailersAdapter.ReviewViewHolder pvh = new com.cryogenius.popularmovies.UI.MovieDetail.Trailers.TrailersAdapter.ReviewViewHolder(v);
+        TrailersViewHolder pvh = new TrailersViewHolder(v);
         return pvh;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(com.cryogenius.popularmovies.UI.MovieDetail.Trailers.TrailersAdapter.ReviewViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
+    public void onBindViewHolder(TrailersViewHolder holder, int position) {
         holder.trailerName.setText(trailersList.getTrailers().get(position).getName());
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         if (trailersList != null && trailersList.getTrailers() != null){
@@ -56,6 +46,22 @@ class TrailersAdapter extends RecyclerView.Adapter<com.cryogenius.popularmovies.
         }
         else{
             return 0;
+        }
+    }
+
+    class TrailersViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
+        TextView trailerName;
+
+        TrailersViewHolder(View itemView) {
+            super(itemView);
+            trailerName = (TextView)itemView.findViewById(R.id.tv_trailer_name);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onListItemClick(clickedPosition);
         }
     }
 }

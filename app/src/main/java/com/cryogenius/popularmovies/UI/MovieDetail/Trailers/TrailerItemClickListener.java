@@ -5,4 +5,5 @@ package com.cryogenius.popularmovies.UI.MovieDetail.Trailers;
  */
 
 public interface TrailerItemClickListener {
+    void onListItemClick(int clickedItemIndex);
 }

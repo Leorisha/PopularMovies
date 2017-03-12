@@ -1,14 +1,18 @@
 package com.cryogenius.popularmovies.UI.MovieDetail.Trailers;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.cryogenius.popularmovies.API.Models.MovieTrailer;
 import com.cryogenius.popularmovies.API.Models.MovieTrailerList;
 import com.cryogenius.popularmovies.Bus.EventBus;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetMovieDetailTrailerListAction;
@@ -20,7 +24,7 @@ import com.squareup.otto.Subscribe;
  * Created by Ana Neto on 05/03/2017.
  */
 
-public class TrailersFragment extends Fragment {
+public class TrailersFragment extends Fragment implements TrailerItemClickListener {
 
     private int selectedMovieId;
     private MovieTrailerList selectedMovieTrailers;
@@ -76,7 +80,7 @@ public class TrailersFragment extends Fragment {
             this.selectedMovieTrailers = event.getTrailersList();
 
             // specify an adapter (see also next example)
-            mAdapter = new TrailersAdapter(this.selectedMovieTrailers);
+            mAdapter = new TrailersAdapter(this.selectedMovieTrailers,this);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.getAdapter().notifyDataSetChanged();
         }
@@ -84,5 +88,14 @@ public class TrailersFragment extends Fragment {
             mRecyclerView.setVisibility(View.GONE);
             emptyTrailersMessage.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onListItemClick(int clickedItemIndex) {
+
+        MovieTrailer trailer = this.selectedMovieTrailers.getTrailers().get(clickedItemIndex);
+
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v="+trailer.getKey())));
+        Log.i("Video", "Video Playing....");
     }
 }
