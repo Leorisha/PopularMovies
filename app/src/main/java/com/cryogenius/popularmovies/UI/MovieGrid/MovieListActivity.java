@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.cryogenius.popularmovies.API.Models.MovieList;
 import com.cryogenius.popularmovies.API.Models.MovieListType;
 import com.cryogenius.popularmovies.Bus.EventBus;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetPopularMoviesAction;
@@ -35,7 +34,6 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     private MovieListType selectedMovieType;
     private ProgressBar loadingCircle;
     private TextView errorMessage;
-    private MovieList activeMovieList;
 
     private static final String LIFECYCLE_MOVIE_TYPE = "movie_type";
     private static final String LIFECYCLE_MOVIE_LIST = "movie_list";
@@ -53,10 +51,6 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
             if(savedInstanceState.containsKey(LIFECYCLE_MOVIE_TYPE)){
                 this.selectedMovieType = (MovieListType) savedInstanceState.getSerializable(LIFECYCLE_MOVIE_TYPE);
             }
-
-            if (savedInstanceState.containsKey(LIFECYCLE_MOVIE_LIST)){
-                this.activeMovieList = savedInstanceState.getParcelable(LIFECYCLE_MOVIE_LIST);
-            }
         }
     }
 
@@ -64,7 +58,6 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(LIFECYCLE_MOVIE_TYPE,this.selectedMovieType);
-        outState.putParcelable(LIFECYCLE_MOVIE_LIST,this.activeMovieList);
     }
 
     @Override
@@ -74,7 +67,10 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
 
         EventBus.getInstance().register(this);
         setSubtitleOnActionBar(getString(R.string.app_name),null);
+
+        //if (this.selectedMovieType == null) {
         EventBus.getInstance().post(new GetSelectedMovieTypeAction());
+        //}
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -197,8 +193,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     public void onPopularMoviesEvent(final PopularMoviesEvent event) {
         if (event.getPopularMoviesList().getMovies().size() > 0){
             showGrid();
-            this.activeMovieList = event.getPopularMoviesList();
-            mAdapter = new GridViewAdapter(this.activeMovieList, this);
+            mAdapter = new GridViewAdapter(event.getPopularMoviesList(), this);
             movieGridView.setAdapter(mAdapter);
             mAdapter.notifyDataSetChanged();
         }
@@ -211,8 +206,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     public void onTopRatedMoviesEvent(final TopRatedMoviesEvent event){
         if (event.getTopRatedMovieList().getMovies().size() > 0){
             showGrid();
-            this.activeMovieList = event.getTopRatedMovieList();
-            mAdapter = new GridViewAdapter(this.activeMovieList, this);
+            mAdapter = new GridViewAdapter(event.getTopRatedMovieList(), this);
             movieGridView.setAdapter(mAdapter);
             mAdapter.notifyDataSetChanged();
         }
