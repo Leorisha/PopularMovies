@@ -108,6 +108,8 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
             case TOP_RATED:
                 onOptionsItemSelected(menu.findItem(R.id.action_filter_top_rated));
                 break;
+            case FAVORITES:
+                onOptionsItemSelected(menu.findItem(R.id.action_filter_favorites));
         }
 
 
@@ -130,9 +132,18 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
                 this.selectedMovieType = MovieListType.TOP_RATED;
                 makeTopRatedMoviesRequest();
                 return true;
+            case R.id.action_filter_favorites:
+                this.selectedMovieType = MovieListType.FAVORITES;
+                makeFavoritesRequest();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void makeFavoritesRequest() {
+        setSubtitleOnActionBar(null,getString(R.string.sorted_title)+" "+getString(R.string.action_filter_by_favorites));
+        showLoader();
     }
 
     public void makePopularMoviesRequest(){

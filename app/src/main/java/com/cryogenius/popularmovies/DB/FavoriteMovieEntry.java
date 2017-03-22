@@ -16,4 +16,6 @@ public interface FavoriteMovieEntry {
     @DataType(INTEGER) @PrimaryKey String _ID = "_id";
     @DataType(TEXT) @NotNull String TITLE = "title";
 
+    //movie poster, synopsis, user rating, and release date
+
 }

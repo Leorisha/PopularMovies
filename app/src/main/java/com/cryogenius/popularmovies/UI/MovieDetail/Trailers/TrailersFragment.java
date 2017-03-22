@@ -24,7 +24,7 @@ import com.squareup.otto.Subscribe;
  * Created by Ana Neto on 05/03/2017.
  */
 
-public class TrailersFragment extends Fragment implements TrailerItemClickListener {
+public class TrailersFragment extends Fragment implements TrailerItemClickListener, ShareClickListener {
 
     private int selectedMovieId;
     private MovieTrailerList selectedMovieTrailers;
@@ -80,7 +80,7 @@ public class TrailersFragment extends Fragment implements TrailerItemClickListen
             this.selectedMovieTrailers = event.getTrailersList();
 
             // specify an adapter (see also next example)
-            mAdapter = new TrailersAdapter(this.selectedMovieTrailers,this);
+            mAdapter = new TrailersAdapter(this.selectedMovieTrailers,this,this);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.getAdapter().notifyDataSetChanged();
         }
@@ -97,5 +97,17 @@ public class TrailersFragment extends Fragment implements TrailerItemClickListen
 
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v="+trailer.getKey())));
         Log.i("Video", "Video Playing....");
+    }
+
+    @Override
+    public void onShareItemClick(int clickedItemIndex) {
+
+        MovieTrailer trailer = this.selectedMovieTrailers.getTrailers().get(clickedItemIndex);
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "http://www.youtube.com/watch?v="+trailer.getKey());
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
     }
 }
