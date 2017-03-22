@@ -28,6 +28,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cryogenius.popularmovies.UI.MovieGrid.MovieListActivity" />
         </activity>
+        <provider
+            android:name=".DB.generated.FavoriteMoviesContentProvider"
+            android:authorities="com.cryogenius.popularmovies.DB.FavoriteMoviesContentProvider"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

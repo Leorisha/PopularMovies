@@ -1,7 +1,10 @@
 package com.cryogenius.popularmovies.UI.MovieDetail;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -10,11 +13,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.cryogenius.popularmovies.API.Models.Movie;
 import com.cryogenius.popularmovies.Bus.EventBus;
 import com.cryogenius.popularmovies.Bus.Messages.Events.MovieDetailEvent;
+import com.cryogenius.popularmovies.DB.FavoriteMovieEntry;
+import com.cryogenius.popularmovies.DB.FavoriteMoviesContentProvider;
 import com.cryogenius.popularmovies.R;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
@@ -26,6 +33,7 @@ import com.squareup.picasso.Picasso;
 public class MovieDetailActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
 
     private int selectedIndex;
+    private Movie selectedMovie;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private PagerAdapter viewAdapter;
     private ImageView moviePoster;
@@ -54,8 +62,32 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
                 if(!favoriteButton.isSelected()){
                     favoriteButton.setSelected(true);
                     favoriteButton.setImageDrawable( getResources().getDrawable(R.drawable.ic_favorite_selected));
+
+                    ContentValues cv = new ContentValues();
+                    cv.put(FavoriteMovieEntry._ID,selectedMovie.getId());
+                    cv.put(FavoriteMovieEntry.TITLE,selectedMovie.getTitle());
+
+                    ContentResolver resolver = getContentResolver();
+                    resolver.insert(FavoriteMoviesContentProvider.FavoriteMovies.FAVORITE_MOVIES,cv);
+
+                    Cursor c = getApplicationContext().getContentResolver().query(FavoriteMoviesContentProvider.FavoriteMovies.FAVORITE_MOVIES,
+                            null, null, null, null);
+                    Log.i("LOG", "cursor count: " + c.getCount());
+                    if (c == null || c.getCount() == 0){
+                    }
+
                 }
                 else {
+
+                    getContentResolver().delete(FavoriteMoviesContentProvider.FavoriteMovies.withId(selectedMovie.getId()),null,null);
+
+                    Cursor c = getApplicationContext().getContentResolver().query(FavoriteMoviesContentProvider.FavoriteMovies.FAVORITE_MOVIES,
+                            null, null, null, null);
+                    Log.i("LOG", "cursor count: " + c.getCount());
+                    if (c == null || c.getCount() == 0){
+                    }
+
+
                     favoriteButton.setSelected(false);
                     favoriteButton.setImageDrawable( getResources().getDrawable(R.drawable.ic_favorite_unselected));
                 }
@@ -116,6 +148,19 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
             ActionBar actionBar = getSupportActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
 
+            selectedMovie = event.getSelectedMovie();
+
+            Cursor c = getContentResolver().query(FavoriteMoviesContentProvider.FavoriteMovies.withId(selectedMovie.getId()),null,null,null,null);
+
+            if (c.getCount() > 0) {
+                favoriteButton.setSelected(true);
+                favoriteButton.setImageDrawable( getResources().getDrawable(R.drawable.ic_favorite_selected));
+            }
+            else {
+                favoriteButton.setSelected(false);
+                favoriteButton.setImageDrawable( getResources().getDrawable(R.drawable.ic_favorite_unselected));
+            }
+
             collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
             collapsingToolbarLayout.setTitle(event.getSelectedMovie().getOriginalTitle());
             actionBar.setTitle(event.getSelectedMovie().getOriginalTitle());
@@ -150,4 +195,5 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
     public void onTabReselected(TabLayout.Tab tab) {
 
     }
+
 }
