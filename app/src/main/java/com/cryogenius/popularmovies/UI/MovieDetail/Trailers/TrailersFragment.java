@@ -34,6 +34,8 @@ public class TrailersFragment extends Fragment implements TrailerItemClickListen
     private RecyclerView.LayoutManager mLayoutManager;
     private TextView emptyTrailersMessage;
 
+    private static final String LIFECYCLE_SELECTED_MOVIE_ID = "selected_movie_id";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -50,6 +52,22 @@ public class TrailersFragment extends Fragment implements TrailerItemClickListen
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            // Restore last state for checked position.
+            selectedMovieId = savedInstanceState.getInt(LIFECYCLE_SELECTED_MOVIE_ID, 0);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(LIFECYCLE_SELECTED_MOVIE_ID, selectedMovieId);
     }
 
     @Override

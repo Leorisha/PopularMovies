@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.cryogenius.popularmovies.API.Models.Movie;
+import com.cryogenius.popularmovies.API.Models.MovieListType;
 import com.cryogenius.popularmovies.Bus.EventBus;
 import com.cryogenius.popularmovies.Bus.Messages.Events.MovieDetailEvent;
 import com.cryogenius.popularmovies.DB.FavoriteMovieEntry;
@@ -25,6 +26,8 @@ import com.cryogenius.popularmovies.DB.FavoriteMoviesContentProvider;
 import com.cryogenius.popularmovies.R;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+
+import java.io.Serializable;
 
 /**
  * Created by Ana Neto on 26/01/2017.
@@ -34,12 +37,17 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
 
     private int selectedIndex;
     private Movie selectedMovie;
+    private int selectedTabIndex = -1;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private PagerAdapter viewAdapter;
     private ImageView moviePoster;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private FloatingActionButton favoriteButton;
+
+    private static final String LIFECYCLE_MOVIE = "selected_movie";
+    private static final String LIFECYCLE_MOVIE_INDEX = "selected_movie_index";
+    private static final String LIFECYCLE_TAB_INDEX = "selected_tab_index";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +58,20 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
         if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
             String selectedIndexInString = intentThatStartedThisActivity.getStringExtra(Intent.EXTRA_TEXT);
             this.selectedIndex = Integer.parseInt(selectedIndexInString);
+        }
+
+        if(savedInstanceState != null){
+            if(savedInstanceState.containsKey(LIFECYCLE_MOVIE)){
+                this.selectedMovie = savedInstanceState.getParcelable(LIFECYCLE_MOVIE);
+            }
+
+            if(savedInstanceState.containsKey(LIFECYCLE_MOVIE_INDEX)){
+                this.selectedIndex = savedInstanceState.getInt(LIFECYCLE_MOVIE_INDEX);
+            }
+
+            if (savedInstanceState.containsKey(LIFECYCLE_TAB_INDEX)){
+                this.selectedTabIndex = savedInstanceState.getInt(LIFECYCLE_TAB_INDEX);
+            }
         }
 
         moviePoster = (ImageView) findViewById(R.id.iv_movie_detail_poster);
@@ -96,6 +118,15 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(LIFECYCLE_TAB_INDEX, this.selectedTabIndex);
+        outState.putParcelable(LIFECYCLE_MOVIE, this.selectedMovie);
+        outState.putSerializable(LIFECYCLE_MOVIE_INDEX,this.selectedIndex);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         EventBus.getInstance().register(this);
@@ -108,6 +139,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
 
             viewAdapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(),this.selectedIndex);
             viewPager.setAdapter(viewAdapter);
+            viewPager.setOffscreenPageLimit(3);
             tabLayout.addOnTabSelectedListener(this);
             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
@@ -117,6 +149,7 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
 
                 @Override
                 public void onPageSelected(int position) {
+                    selectedTabIndex = position;
                     TabLayout.Tab tab = tabLayout.getTabAt(position);
                     tab.select();
                 }
@@ -171,9 +204,17 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
             Picasso.with(context).load(posterURL).into(moviePoster);
 
             if (viewAdapter != null){
-                viewAdapter.setSelectedId(event.getSelectedMovie().getId());
-                viewAdapter.notifyDataSetChanged();
-                viewPager.invalidate();
+                if (this.selectedTabIndex >= 0) {
+                    TabLayout.Tab tab = tabLayout.getTabAt(this.selectedTabIndex);
+                    tab.select();
+                }
+                else {
+                    viewAdapter.setSelectedId(event.getSelectedMovie().getId());
+                    viewAdapter.notifyDataSetChanged();
+                    viewPager.invalidate();
+
+                }
+
             }
 
         } else {

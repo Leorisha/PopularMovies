@@ -24,6 +24,8 @@ public class InfoFragment extends Fragment {
     private TextView userRating;
     private TextView releaseDate;
 
+    private static final String LIFECYCLE_SELECTED_INDEX = "selected_index";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -34,6 +36,22 @@ public class InfoFragment extends Fragment {
         releaseDate = (TextView) rootView.findViewById(R.id.tv_movie_detail_duration);
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            // Restore last state for checked position.
+            selectedIndex = savedInstanceState.getInt(LIFECYCLE_SELECTED_INDEX, 0);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(LIFECYCLE_SELECTED_INDEX, selectedIndex);
     }
 
     @Override

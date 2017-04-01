@@ -4,6 +4,7 @@ package com.cryogenius.popularmovies.UI.MovieDetail;
  * Created by Ana Neto on 05/03/2017.
  */
 
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -48,6 +49,16 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             default:
                 return null;
         }
+    }
+
+    @Override
+    public Parcelable saveState() {
+        return super.saveState();
+    }
+
+    @Override
+    public void restoreState(Parcelable state, ClassLoader loader) {
+        super.restoreState(state, loader);
     }
 
     //Overriden method getCount to get the number of tabs
