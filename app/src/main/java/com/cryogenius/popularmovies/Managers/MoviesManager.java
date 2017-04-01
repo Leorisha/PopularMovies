@@ -1,5 +1,6 @@
 package com.cryogenius.popularmovies.Managers;
 
+import android.database.Cursor;
 import android.util.Log;
 
 import com.cryogenius.popularmovies.API.Models.Movie;
@@ -22,6 +23,7 @@ import com.cryogenius.popularmovies.Bus.Messages.Events.MovieDetailTrailersEvent
 import com.cryogenius.popularmovies.Bus.Messages.Events.PopularMoviesEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.SelectedMovieTypeEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.TopRatedMoviesEvent;
+import com.cryogenius.popularmovies.DB.FavoriteMoviesContentProvider;
 import com.squareup.otto.Subscribe;
 
 import retrofit2.Call;
@@ -57,6 +59,14 @@ public class MoviesManager {
         this.topRatedMovies = topRatedMovies;
     }
 
+    public MovieListType getSelectedMovieType() {
+        return selectedMovieType;
+    }
+
+    public void setSelectedMovieType(MovieListType selectedMovieType) {
+        this.selectedMovieType = selectedMovieType;
+    }
+
     public MovieList getPopularMovies() {
         return popularMovies;
     }
@@ -80,6 +90,9 @@ public class MoviesManager {
                 case POPULAR:
                     Movie selectedPopularMovie = this.getPopularMovies().getMovies().get(action.getSelectedIndex());
                     EventBus.getInstance().post(new MovieDetailEvent(selectedPopularMovie));
+                    break;
+                case FAVORITES:
+                    EventBus.getInstance().post(new MovieDetailEvent(null));
                     break;
             }
         }

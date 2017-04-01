@@ -1,5 +1,8 @@
 package com.cryogenius.popularmovies.UI.MovieDetail.Reviews;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +14,7 @@ import android.widget.TextView;
 
 import com.cryogenius.popularmovies.API.Models.MovieReviewsList;
 import com.cryogenius.popularmovies.Bus.EventBus;
+import com.cryogenius.popularmovies.Bus.Messages.Actions.GetMovieDetailTrailerListAction;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetMoviewDetailReviewsListAction;
 import com.cryogenius.popularmovies.Bus.Messages.Events.MovieDetailReviewsEvent;
 import com.cryogenius.popularmovies.R;
@@ -74,7 +78,15 @@ public class ReviewsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getInstance().post(new GetMoviewDetailReviewsListAction(this.selectedMovieId));
+        if (this.isOnline()){
+            EventBus.getInstance().post(new GetMoviewDetailReviewsListAction(this.selectedMovieId));
+        }
+        else {
+            mRecyclerView.setVisibility(View.GONE);
+            emptyReviewsMessage.setVisibility(View.VISIBLE);
+        }
+
+
 
     }
 
@@ -107,5 +119,12 @@ public class ReviewsFragment extends Fragment {
             mRecyclerView.setVisibility(View.GONE);
             emptyReviewsMessage.setVisibility(View.VISIBLE);
         }
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

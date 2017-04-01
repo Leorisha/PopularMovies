@@ -2,6 +2,7 @@ package com.cryogenius.popularmovies.UI.MovieGrid;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -9,12 +10,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.cryogenius.popularmovies.API.Models.Movie;
+import com.cryogenius.popularmovies.API.Models.MovieList;
 import com.cryogenius.popularmovies.API.Models.MovieListType;
 import com.cryogenius.popularmovies.Bus.EventBus;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetPopularMoviesAction;
@@ -23,9 +27,14 @@ import com.cryogenius.popularmovies.Bus.Messages.Actions.GetTopRatedMoviesAction
 import com.cryogenius.popularmovies.Bus.Messages.Events.PopularMoviesEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.SelectedMovieTypeEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.TopRatedMoviesEvent;
+import com.cryogenius.popularmovies.DB.FavoriteMovieEntry;
+import com.cryogenius.popularmovies.DB.FavoriteMoviesContentProvider;
+import com.cryogenius.popularmovies.Managers.MoviesManager;
 import com.cryogenius.popularmovies.R;
 import com.cryogenius.popularmovies.UI.MovieDetail.MovieDetailActivity;
 import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
 
 public class MovieListActivity extends AppCompatActivity  implements GridItemClickListener {
 
@@ -144,6 +153,41 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     public void makeFavoritesRequest() {
         setSubtitleOnActionBar(null,getString(R.string.sorted_title)+" "+getString(R.string.action_filter_by_favorites));
         showLoader();
+
+        MoviesManager.getInstance().setSelectedMovieType(this.selectedMovieType);
+
+        Cursor c = getApplicationContext().getContentResolver().query(FavoriteMoviesContentProvider.FavoriteMovies.FAVORITE_MOVIES,
+                null, null, null, null);
+        Log.i("LOG", "cursor count: " + c.getCount());
+
+        if (c == null || c.getCount() == 0){
+            this.displayNoFavoritesMessage();
+        }
+        else {
+            ArrayList<Movie> mArrayList = new ArrayList<Movie>();
+            for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+                // The Cursor is now set to the right position
+                Movie favoriteMovie = new Movie();
+                favoriteMovie.setId(c.getInt(0));
+                favoriteMovie.setTitle(c.getString(1));
+                favoriteMovie.setPosterPath(c.getString(2));
+                favoriteMovie.setOverview(c.getString(3));
+                favoriteMovie.setVoteAverage(c.getInt(4));
+                favoriteMovie.setReleaseDate(c.getString(5));
+                //mArrayList.add(mCursor.getWhateverTypeYouWant(WHATEVER_COLUMN_INDEX_YOU_WANT));
+                mArrayList.add(favoriteMovie);
+            }
+
+            MovieList favoriteMovieList = new MovieList();
+            favoriteMovieList.setMovies(mArrayList);
+
+            this.showGrid();
+
+            mAdapter = new GridViewAdapter(favoriteMovieList, this);
+            movieGridView.setAdapter(mAdapter);
+            mAdapter.notifyDataSetChanged();
+
+        }
     }
 
     public void makePopularMoviesRequest(){
@@ -196,6 +240,9 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
             case TOP_RATED:
                 makeTopRatedMoviesRequest();
                 break;
+            case FAVORITES:
+                makeFavoritesRequest();
+                break;
 
         }
     }
@@ -227,6 +274,12 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     }
 
     public void displayErrorMessage(){
+        this.loadingCircle.setVisibility(View.INVISIBLE);
+        this.movieGridView.setVisibility(View.INVISIBLE);
+        this.errorMessage.setVisibility(View.VISIBLE);
+    }
+
+    public void displayNoFavoritesMessage(){
         this.loadingCircle.setVisibility(View.INVISIBLE);
         this.movieGridView.setVisibility(View.INVISIBLE);
         this.errorMessage.setVisibility(View.VISIBLE);

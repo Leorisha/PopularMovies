@@ -1,6 +1,9 @@
 package com.cryogenius.popularmovies.UI.MovieDetail.Trailers;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -79,7 +82,13 @@ public class TrailersFragment extends Fragment implements TrailerItemClickListen
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getInstance().post(new GetMovieDetailTrailerListAction(this.selectedMovieId));
+        if (this.isOnline()){
+            EventBus.getInstance().post(new GetMovieDetailTrailerListAction(this.selectedMovieId));
+        }
+        else {
+            mRecyclerView.setVisibility(View.GONE);
+            emptyTrailersMessage.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -127,5 +136,12 @@ public class TrailersFragment extends Fragment implements TrailerItemClickListen
         sendIntent.putExtra(Intent.EXTRA_TEXT, "http://www.youtube.com/watch?v="+trailer.getKey());
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
