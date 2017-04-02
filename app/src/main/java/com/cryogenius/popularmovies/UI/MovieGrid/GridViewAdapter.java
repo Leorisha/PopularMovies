@@ -21,6 +21,15 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.GridIt
     private int mNumberItems;
     private MovieList moviesInGrid;
 
+    public MovieList getMoviesInGrid() {
+        return moviesInGrid;
+    }
+
+    public void setMoviesInGrid(MovieList moviesInGrid) {
+        this.moviesInGrid = moviesInGrid;
+        this.mNumberItems = this.moviesInGrid.getMovies().size();
+    }
+
     @Override
     public GridItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -46,9 +55,7 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.GridIt
         return mNumberItems;
     }
 
-    public GridViewAdapter(MovieList movies, GridItemClickListener listener) {
-        moviesInGrid = movies;
-        mNumberItems = movies.getMovies().size();
+    public GridViewAdapter( GridItemClickListener listener) {
         mOnClickListener = listener;
     }
 
