@@ -44,7 +44,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     private MovieListType selectedMovieType;
     private ProgressBar loadingCircle;
     private TextView errorMessage;
-
+    private GridLayoutManager layoutManager;
     private MovieList savesGrid;
     private int gridPosition;
 
@@ -61,7 +61,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
         this.loadingCircle = (ProgressBar)findViewById(R.id.pb_loading_indicator);
         this.movieGridView = (RecyclerView)findViewById(R.id.rv_movie_grid);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this,2);
+        this.layoutManager = new GridLayoutManager(this,2);
         movieGridView.setLayoutManager(layoutManager);
 
         mAdapter = new GridViewAdapter(this);
@@ -93,7 +93,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
         outState.putSerializable(LIFECYCLE_MOVIE_TYPE,this.selectedMovieType);
         outState.putParcelable(LIFECYCLE_MOVIE_LIST, mAdapter.getMoviesInGrid());
 
-        int currentVisiblePosition = ((GridLayoutManager)movieGridView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+        int currentVisiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition();
         outState.putInt(LIFECYCLE_MOVIE_POSITION,currentVisiblePosition);
 
     }
@@ -115,7 +115,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     @Override
     public void onStart() {
         super.onStart();
-        showLoader();
+        //showLoader();
 
         EventBus.getInstance().register(this);
     }
@@ -128,7 +128,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     private void updateSizeInfo() {
         float density  = getResources().getDisplayMetrics().density;
         int width = (int) Math.abs(movieGridView.getWidth()/density);
-        GridLayoutManager layoutManager = new GridLayoutManager(this,Math.abs(width/150));
+        this.layoutManager = new GridLayoutManager(this,Math.abs(width/150));
         movieGridView.setLayoutManager(layoutManager);
         movieGridView.setHasFixedSize(true);
     }
@@ -144,11 +144,11 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
 
         if (savesGrid != null) {
             mAdapter.setMoviesInGrid(savesGrid);
-            mAdapter.notifyDataSetChanged();
+            //mAdapter.notifyDataSetChanged();
         }
 
         if (gridPosition > -1) {
-            movieGridView.getLayoutManager().scrollToPosition(gridPosition);
+            movieGridView.smoothScrollToPosition(gridPosition);
             gridPosition = -1;
         }
     }
@@ -187,16 +187,16 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
         switch (itemId) {
             case R.id.action_filter_popular:
                 this.selectedMovieType = MovieListType.POPULAR;
-                //makePopularMoviesRequest();
+                makePopularMoviesRequest();
                 return true;
 
             case R.id.action_filter_top_rated:
                 this.selectedMovieType = MovieListType.TOP_RATED;
-                //makeTopRatedMoviesRequest();
+                makeTopRatedMoviesRequest();
                 return true;
             case R.id.action_filter_favorites:
                 this.selectedMovieType = MovieListType.FAVORITES;
-                //makeFavoritesRequest();
+                makeFavoritesRequest();
                 return true;
         }
 
@@ -219,7 +219,6 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
         else {
             ArrayList<Movie> mArrayList = new ArrayList<Movie>();
             for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                // The Cursor is now set to the right position
                 Movie favoriteMovie = new Movie();
                 favoriteMovie.setId(c.getInt(0));
                 favoriteMovie.setTitle(c.getString(1));
@@ -227,7 +226,6 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
                 favoriteMovie.setOverview(c.getString(3));
                 favoriteMovie.setVoteAverage(c.getInt(4));
                 favoriteMovie.setReleaseDate(c.getString(5));
-                //mArrayList.add(mCursor.getWhateverTypeYouWant(WHATEVER_COLUMN_INDEX_YOU_WANT));
                 mArrayList.add(favoriteMovie);
             }
 
