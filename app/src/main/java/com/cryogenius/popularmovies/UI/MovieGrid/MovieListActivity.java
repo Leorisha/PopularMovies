@@ -2,6 +2,7 @@ package com.cryogenius.popularmovies.UI.MovieGrid;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -61,13 +62,12 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
         this.loadingCircle = (ProgressBar)findViewById(R.id.pb_loading_indicator);
         this.movieGridView = (RecyclerView)findViewById(R.id.rv_movie_grid);
 
-        this.layoutManager = new GridLayoutManager(this,2);
-        movieGridView.setLayoutManager(layoutManager);
+        updateSizeInfo();
 
         mAdapter = new GridViewAdapter(this);
         movieGridView.setAdapter(mAdapter);
 
-        selectedMovieType = MovieListType.POPULAR;
+        loadSelectedMovieTypeFromSharedPreferences();
 
         if(savedInstanceState == null){
             switch (selectedMovieType) {
@@ -100,6 +100,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
 
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
+        updateSizeInfo();
 
         if(state.containsKey(LIFECYCLE_MOVIE_TYPE)){
             this.selectedMovieType = (MovieListType) state.getSerializable(LIFECYCLE_MOVIE_TYPE);
@@ -120,15 +121,10 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
         EventBus.getInstance().register(this);
     }
 
-    public void onWindowFocusChanged(boolean hasFocus) {
-        // TODO Auto-generated method stub
-        super.onWindowFocusChanged(hasFocus);
-        updateSizeInfo();
-    }
     private void updateSizeInfo() {
         float density  = getResources().getDisplayMetrics().density;
-        int width = (int) Math.abs(movieGridView.getWidth()/density);
-        this.layoutManager = new GridLayoutManager(this,Math.abs(width/150));
+        int width = (int) Math.abs(getResources().getDisplayMetrics().widthPixels/density);
+        this.layoutManager = new GridLayoutManager(this,Math.abs(width/130));
         movieGridView.setLayoutManager(layoutManager);
         movieGridView.setHasFixedSize(true);
     }
@@ -136,6 +132,9 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     @Override
     protected void onPause() {
         super.onPause();
+
+        gridPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+
     }
 
     @Override
@@ -148,8 +147,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
         }
 
         if (gridPosition > -1) {
-            movieGridView.smoothScrollToPosition(gridPosition);
-            gridPosition = -1;
+            movieGridView.scrollToPosition(gridPosition);
         }
     }
 
@@ -163,7 +161,9 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.filter_menu, menu);
 
-        /*switch (this.selectedMovieType) {
+        loadSelectedMovieTypeFromSharedPreferences();
+
+        switch (this.selectedMovieType) {
             case POPULAR:
                 onOptionsItemSelected(menu.findItem(R.id.action_filter_popular));
                 break;
@@ -172,8 +172,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
                 break;
             case FAVORITES:
                 onOptionsItemSelected(menu.findItem(R.id.action_filter_favorites));
-        }*/
-
+        }
 
         return true;
     }
@@ -181,26 +180,68 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        int itemId = item.getItemId();
-        item.setChecked(true);
+        if (!item.isChecked()) {
+            int itemId = item.getItemId();
+            item.setChecked(true);
 
-        switch (itemId) {
-            case R.id.action_filter_popular:
-                this.selectedMovieType = MovieListType.POPULAR;
-                makePopularMoviesRequest();
-                return true;
+            switch (itemId) {
+                case R.id.action_filter_popular:
+                    this.selectedMovieType = MovieListType.POPULAR;
+                    saveSelectedMovieTypeInSharedPreferences(this.selectedMovieType);
+                    makePopularMoviesRequest();
+                    return true;
 
-            case R.id.action_filter_top_rated:
-                this.selectedMovieType = MovieListType.TOP_RATED;
-                makeTopRatedMoviesRequest();
-                return true;
-            case R.id.action_filter_favorites:
-                this.selectedMovieType = MovieListType.FAVORITES;
-                makeFavoritesRequest();
-                return true;
+                case R.id.action_filter_top_rated:
+                    this.selectedMovieType = MovieListType.TOP_RATED;
+                    saveSelectedMovieTypeInSharedPreferences(this.selectedMovieType);
+                    makeTopRatedMoviesRequest();
+                    return true;
+                case R.id.action_filter_favorites:
+                    this.selectedMovieType = MovieListType.FAVORITES;
+                    saveSelectedMovieTypeInSharedPreferences(this.selectedMovieType);
+                    makeFavoritesRequest();
+                    return true;
+            }
         }
 
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveSelectedMovieTypeInSharedPreferences(MovieListType selectedMovieIndex) {
+        SharedPreferences mPrefs = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = mPrefs.edit();
+
+        switch (selectedMovieIndex) {
+            case POPULAR:
+                prefsEditor.putString("SELECTED_MOVIE_TYPE","POPULAR");
+                break;
+            case TOP_RATED:
+                prefsEditor.putString("SELECTED_MOVIE_TYPE","TOP_RATED");
+                break;
+            case FAVORITES:
+                prefsEditor.putString("SELECTED_MOVIE_TYPE","FAVORITES");
+                break;
+        }
+        prefsEditor.commit();
+    }
+
+    private void loadSelectedMovieTypeFromSharedPreferences() {
+        SharedPreferences mPrefs = getPreferences(MODE_PRIVATE);
+        String storedMovieType = mPrefs.getString("SELECTED_MOVIE_TYPE","POPULAR");
+
+        switch (storedMovieType) {
+            case "POPULAR":
+                this.selectedMovieType = MovieListType.POPULAR;
+                break;
+            case "TOP_RATED":
+                this.selectedMovieType = MovieListType.TOP_RATED;
+                break;
+            case "FAVORITES":
+                this.selectedMovieType = MovieListType.FAVORITES;
+                break;
+        }
+
     }
 
     public void makeFavoritesRequest() {
@@ -235,6 +276,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
             this.showGrid();
 
             mAdapter = new GridViewAdapter(this);
+            mAdapter.setMoviesInGrid(favoriteMovieList);
             movieGridView.setAdapter(mAdapter);
             mAdapter.notifyDataSetChanged();
 

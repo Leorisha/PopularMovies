@@ -103,8 +103,7 @@ public class MoviesManager {
 
     @Subscribe
     public void onGetPopularMoviesAction(final GetPopularMoviesAction action) {
-        if(MoviesManager.getInstance().getPopularMovies().getMovies() == null) {
-            MoviesAPI.Factory.getInstance().getPopularMoviesFromApi(BuildConfig.API_KEY).enqueue(new Callback<MovieList>() {
+        MoviesAPI.Factory.getInstance().getPopularMoviesFromApi(BuildConfig.API_KEY).enqueue(new Callback<MovieList>() {
                 @Override
                 public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                     MoviesManager.getInstance().selectedMovieType = MovieListType.POPULAR;
@@ -117,16 +116,11 @@ public class MoviesManager {
                     Log.d("DEBUG","onGetPopularMoviesAction - failure");
                 }
             });
-        }
-        else {
-            EventBus.getInstance().post(new PopularMoviesEvent(MoviesManager.getInstance().getPopularMovies()));
-        }
     }
 
     @Subscribe
     public void onGetTopRatedMoviesAction(final GetTopRatedMoviesAction action) {
-        if(MoviesManager.getInstance().getTopRatedMovies().getMovies() == null){
-            MoviesAPI.Factory.getInstance().getTopMoviesFromApi(BuildConfig.API_KEY).enqueue(new Callback<MovieList>() {
+           MoviesAPI.Factory.getInstance().getTopMoviesFromApi(BuildConfig.API_KEY).enqueue(new Callback<MovieList>() {
                 @Override
                 public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                     MoviesManager.getInstance().selectedMovieType = MovieListType.TOP_RATED;
@@ -139,10 +133,7 @@ public class MoviesManager {
                     Log.d("DEBUG","onGetTopRatedMoviesAction - failure");
                 }
             });
-        }
-        else {
-            EventBus.getInstance().post(new TopRatedMoviesEvent(MoviesManager.getInstance().getTopRatedMovies()));
-        }
+
     }
 
     @Subscribe
