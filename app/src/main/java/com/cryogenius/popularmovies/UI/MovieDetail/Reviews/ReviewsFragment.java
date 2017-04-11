@@ -1,9 +1,11 @@
 package com.cryogenius.popularmovies.UI.MovieDetail.Reviews;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,6 +59,8 @@ public class ReviewsFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        loadSelectedMovieIdInSharedPreferences();
+
         if (savedInstanceState != null) {
             // Restore last state for checked position.
             selectedMovieId = savedInstanceState.getInt(LIFECYCLE_SELECTED_MOVIE_ID, 0);
@@ -79,15 +83,28 @@ public class ReviewsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (this.isOnline()){
-            EventBus.getInstance().post(new GetMoviewDetailReviewsListAction(this.selectedMovieId));
+            if (this.selectedMovieId > 0) {
+                saveSelectedMovieIdInSharedPreferences();
+                EventBus.getInstance().post(new GetMoviewDetailReviewsListAction(this.selectedMovieId));
+            }
         }
         else {
             mRecyclerView.setVisibility(View.GONE);
             emptyReviewsMessage.setVisibility(View.VISIBLE);
         }
+    }
 
+    private void saveSelectedMovieIdInSharedPreferences() {
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+        SharedPreferences.Editor prefsEditor = mPrefs.edit();
 
+        prefsEditor.putInt("SELECTED_MOVIE_ID",this.selectedMovieId);
+        prefsEditor.commit();
+    }
 
+    private void loadSelectedMovieIdInSharedPreferences() {
+        SharedPreferences mPrefs = this.getActivity().getPreferences(Context.MODE_PRIVATE);
+        this.selectedMovieId = mPrefs.getInt("SELECTED_MOVIE_ID",0);
     }
 
     @Override
@@ -101,6 +118,7 @@ public class ReviewsFragment extends Fragment {
     }
 
     public void setSelectedMovieId(int selectedMovieId) {
+
         this.selectedMovieId = selectedMovieId;
     }
 

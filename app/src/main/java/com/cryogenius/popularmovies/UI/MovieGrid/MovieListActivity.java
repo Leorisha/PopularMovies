@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -24,12 +23,9 @@ import com.cryogenius.popularmovies.API.Models.MovieList;
 import com.cryogenius.popularmovies.API.Models.MovieListType;
 import com.cryogenius.popularmovies.Bus.EventBus;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetPopularMoviesAction;
-import com.cryogenius.popularmovies.Bus.Messages.Actions.GetSelectedMovieTypeAction;
 import com.cryogenius.popularmovies.Bus.Messages.Actions.GetTopRatedMoviesAction;
 import com.cryogenius.popularmovies.Bus.Messages.Events.PopularMoviesEvent;
-import com.cryogenius.popularmovies.Bus.Messages.Events.SelectedMovieTypeEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.TopRatedMoviesEvent;
-import com.cryogenius.popularmovies.DB.FavoriteMovieEntry;
 import com.cryogenius.popularmovies.DB.FavoriteMoviesContentProvider;
 import com.cryogenius.popularmovies.Managers.MoviesManager;
 import com.cryogenius.popularmovies.R;
@@ -46,8 +42,9 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     private ProgressBar loadingCircle;
     private TextView errorMessage;
     private GridLayoutManager layoutManager;
-    private MovieList savesGrid;
+    private boolean isLoadingFavorites = false;
     private int gridPosition;
+
 
     private static final String LIFECYCLE_MOVIE_TYPE = "movie_type";
     private static final String LIFECYCLE_MOVIE_LIST = "movie_list";
@@ -91,7 +88,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(LIFECYCLE_MOVIE_TYPE,this.selectedMovieType);
-        outState.putParcelable(LIFECYCLE_MOVIE_LIST, mAdapter.getMoviesInGrid());
+        outState.putInt(LIFECYCLE_MOVIE_LIST, mAdapter.getMoviesInGrid().getMovies().size());
 
         int currentVisiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition();
         outState.putInt(LIFECYCLE_MOVIE_POSITION,currentVisiblePosition);
@@ -106,9 +103,7 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
             this.selectedMovieType = (MovieListType) state.getSerializable(LIFECYCLE_MOVIE_TYPE);
         }
 
-        // Retrieve list state and list/item positions
-        if(state != null) {
-            savesGrid = state.getParcelable(LIFECYCLE_MOVIE_LIST);
+        if(state.containsKey(LIFECYCLE_MOVIE_POSITION)){
             gridPosition = state.getInt(LIFECYCLE_MOVIE_POSITION);
         }
     }
@@ -133,17 +128,16 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     protected void onPause() {
         super.onPause();
 
+        this.isLoadingFavorites = false;
         gridPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (savesGrid != null) {
-            mAdapter.setMoviesInGrid(savesGrid);
-            //mAdapter.notifyDataSetChanged();
+        if (this.selectedMovieType == MovieListType.FAVORITES) {
+            makeFavoritesRequest();
         }
 
         if (gridPosition > -1) {
@@ -245,41 +239,46 @@ public class MovieListActivity extends AppCompatActivity  implements GridItemCli
     }
 
     public void makeFavoritesRequest() {
-        setSubtitleOnActionBar(null,getString(R.string.sorted_title)+" "+getString(R.string.action_filter_by_favorites));
-        showLoader();
+        if (!isLoadingFavorites) {
 
-        MoviesManager.getInstance().setSelectedMovieType(this.selectedMovieType);
+            isLoadingFavorites = true;
 
-        Cursor c = getApplicationContext().getContentResolver().query(FavoriteMoviesContentProvider.FavoriteMovies.FAVORITE_MOVIES,
-                null, null, null, null);
-        Log.i("LOG", "cursor count: " + c.getCount());
+            setSubtitleOnActionBar(null,getString(R.string.sorted_title)+" "+getString(R.string.action_filter_by_favorites));
+            showLoader();
 
-        if (c == null || c.getCount() == 0){
-            this.displayNoFavoritesMessage();
-        }
-        else {
-            ArrayList<Movie> mArrayList = new ArrayList<Movie>();
-            for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                Movie favoriteMovie = new Movie();
-                favoriteMovie.setId(c.getInt(0));
-                favoriteMovie.setTitle(c.getString(1));
-                favoriteMovie.setPosterPath(c.getString(2));
-                favoriteMovie.setOverview(c.getString(3));
-                favoriteMovie.setVoteAverage(c.getInt(4));
-                favoriteMovie.setReleaseDate(c.getString(5));
-                mArrayList.add(favoriteMovie);
+            MoviesManager.getInstance().setSelectedMovieType(this.selectedMovieType);
+
+            Cursor c = getApplicationContext().getContentResolver().query(FavoriteMoviesContentProvider.FavoriteMovies.FAVORITE_MOVIES,
+                    null, null, null, null);
+            Log.i("LOG", "cursor count: " + c.getCount());
+
+            if (c == null || c.getCount() == 0){
+                this.displayNoFavoritesMessage();
             }
+            else {
+                ArrayList<Movie> mArrayList = new ArrayList<Movie>();
+                for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+                    Movie favoriteMovie = new Movie();
+                    favoriteMovie.setId(c.getInt(0));
+                    favoriteMovie.setTitle(c.getString(1));
+                    favoriteMovie.setPosterPath(c.getString(2));
+                    favoriteMovie.setOverview(c.getString(3));
+                    favoriteMovie.setVoteAverage(c.getInt(4));
+                    favoriteMovie.setReleaseDate(c.getString(5));
+                    mArrayList.add(favoriteMovie);
+                }
 
-            MovieList favoriteMovieList = new MovieList();
-            favoriteMovieList.setMovies(mArrayList);
+                MovieList favoriteMovieList = new MovieList();
+                favoriteMovieList.setMovies(mArrayList);
 
-            this.showGrid();
+                this.showGrid();
 
-            mAdapter = new GridViewAdapter(this);
-            mAdapter.setMoviesInGrid(favoriteMovieList);
-            movieGridView.setAdapter(mAdapter);
-            mAdapter.notifyDataSetChanged();
+                mAdapter = new GridViewAdapter(this);
+                mAdapter.setMoviesInGrid(favoriteMovieList);
+                movieGridView.setAdapter(mAdapter);
+                mAdapter.notifyDataSetChanged();
 
+            }
         }
     }
 

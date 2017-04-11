@@ -150,6 +150,8 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
                 }
             });
 
+            viewPager.setCurrentItem(this.selectedTabIndex);
+
             //EventBus.getInstance().post(new GetMovieDetailAction(this.selectedIndex));
         } else {
             //TODO: display error
