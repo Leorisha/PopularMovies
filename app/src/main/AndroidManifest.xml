@@ -12,21 +12,27 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UI.MovieListActivity"
-            android:launchMode="standard">
+        <activity android:name=".UI.MovieGrid.MovieListActivity"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".UI.MovieDetailActivity"
+            android:name=".UI.MovieDetail.MovieDetailActivity"
             android:launchMode="standard"
-            android:parentActivityName="com.cryogenius.popularmovies.UI.MovieListActivity" >
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName="com.cryogenius.popularmovies.UI.MovieGrid.MovieListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.cryogenius.popularmovies.UI.MovieListActivity" />
+                android:value="com.cryogenius.popularmovies.UI.MovieGrid.MovieListActivity" />
         </activity>
+        <provider
+            android:name=".DB.generated.FavoriteMoviesContentProvider"
+            android:authorities="com.cryogenius.popularmovies.DB.FavoriteMoviesContentProvider"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

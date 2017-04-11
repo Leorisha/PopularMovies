@@ -6,5 +6,6 @@ package com.cryogenius.popularmovies.API.Models;
 
 public enum MovieListType {
     TOP_RATED,
-    POPULAR
+    POPULAR,
+    FAVORITES
 }

@@ -1,11 +1,14 @@
 package com.cryogenius.popularmovies.API;
 
 import com.cryogenius.popularmovies.API.Models.MovieList;
+import com.cryogenius.popularmovies.API.Models.MovieReviewsList;
+import com.cryogenius.popularmovies.API.Models.MovieTrailerList;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -21,6 +24,18 @@ public interface MoviesAPI {
 
     @GET("movie/popular")
     Call<MovieList> getPopularMoviesFromApi (
+            @Query("api_key") String apiKey
+    );
+
+    @GET("movie/{id}/videos")
+    Call<MovieTrailerList> getTrailersOfMovieFromApi (
+            @Path("id") String movieId,
+            @Query("api_key") String apiKey
+    );
+
+    @GET("movie/{id}/reviews")
+    Call<MovieReviewsList> getReviewsOfMovieFromApi (
+            @Path("id") String movieId,
             @Query("api_key") String apiKey
     );
 
