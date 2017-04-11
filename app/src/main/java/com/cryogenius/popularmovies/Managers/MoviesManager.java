@@ -1,5 +1,6 @@
 package com.cryogenius.popularmovies.Managers;
 
+import android.database.Cursor;
 import android.util.Log;
 
 import com.cryogenius.popularmovies.API.Models.Movie;
@@ -22,6 +23,7 @@ import com.cryogenius.popularmovies.Bus.Messages.Events.MovieDetailTrailersEvent
 import com.cryogenius.popularmovies.Bus.Messages.Events.PopularMoviesEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.SelectedMovieTypeEvent;
 import com.cryogenius.popularmovies.Bus.Messages.Events.TopRatedMoviesEvent;
+import com.cryogenius.popularmovies.DB.FavoriteMoviesContentProvider;
 import com.squareup.otto.Subscribe;
 
 import retrofit2.Call;
@@ -57,6 +59,14 @@ public class MoviesManager {
         this.topRatedMovies = topRatedMovies;
     }
 
+    public MovieListType getSelectedMovieType() {
+        return selectedMovieType;
+    }
+
+    public void setSelectedMovieType(MovieListType selectedMovieType) {
+        this.selectedMovieType = selectedMovieType;
+    }
+
     public MovieList getPopularMovies() {
         return popularMovies;
     }
@@ -81,6 +91,9 @@ public class MoviesManager {
                     Movie selectedPopularMovie = this.getPopularMovies().getMovies().get(action.getSelectedIndex());
                     EventBus.getInstance().post(new MovieDetailEvent(selectedPopularMovie));
                     break;
+                case FAVORITES:
+                    EventBus.getInstance().post(new MovieDetailEvent(null));
+                    break;
             }
         }
         else{
@@ -90,8 +103,7 @@ public class MoviesManager {
 
     @Subscribe
     public void onGetPopularMoviesAction(final GetPopularMoviesAction action) {
-        if(MoviesManager.getInstance().getPopularMovies().getMovies() == null) {
-            MoviesAPI.Factory.getInstance().getPopularMoviesFromApi(BuildConfig.API_KEY).enqueue(new Callback<MovieList>() {
+        MoviesAPI.Factory.getInstance().getPopularMoviesFromApi(BuildConfig.API_KEY).enqueue(new Callback<MovieList>() {
                 @Override
                 public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                     MoviesManager.getInstance().selectedMovieType = MovieListType.POPULAR;
@@ -104,16 +116,11 @@ public class MoviesManager {
                     Log.d("DEBUG","onGetPopularMoviesAction - failure");
                 }
             });
-        }
-        else {
-            EventBus.getInstance().post(new PopularMoviesEvent(MoviesManager.getInstance().getPopularMovies()));
-        }
     }
 
     @Subscribe
     public void onGetTopRatedMoviesAction(final GetTopRatedMoviesAction action) {
-        if(MoviesManager.getInstance().getTopRatedMovies().getMovies() == null){
-            MoviesAPI.Factory.getInstance().getTopMoviesFromApi(BuildConfig.API_KEY).enqueue(new Callback<MovieList>() {
+           MoviesAPI.Factory.getInstance().getTopMoviesFromApi(BuildConfig.API_KEY).enqueue(new Callback<MovieList>() {
                 @Override
                 public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                     MoviesManager.getInstance().selectedMovieType = MovieListType.TOP_RATED;
@@ -126,10 +133,7 @@ public class MoviesManager {
                     Log.d("DEBUG","onGetTopRatedMoviesAction - failure");
                 }
             });
-        }
-        else {
-            EventBus.getInstance().post(new TopRatedMoviesEvent(MoviesManager.getInstance().getTopRatedMovies()));
-        }
+
     }
 
     @Subscribe

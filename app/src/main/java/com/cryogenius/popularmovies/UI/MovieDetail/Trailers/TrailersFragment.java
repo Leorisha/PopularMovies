@@ -1,8 +1,13 @@
 package com.cryogenius.popularmovies.UI.MovieDetail.Trailers;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,6 +63,8 @@ public class TrailersFragment extends Fragment implements TrailerItemClickListen
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        loadSelectedMovieIdInSharedPreferences();
+
         if (savedInstanceState != null) {
             // Restore last state for checked position.
             selectedMovieId = savedInstanceState.getInt(LIFECYCLE_SELECTED_MOVIE_ID, 0);
@@ -79,7 +86,16 @@ public class TrailersFragment extends Fragment implements TrailerItemClickListen
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getInstance().post(new GetMovieDetailTrailerListAction(this.selectedMovieId));
+        if (this.isOnline()){
+            if (this.selectedMovieId > 0){
+                saveSelectedMovieIdInSharedPreferences();
+                EventBus.getInstance().post(new GetMovieDetailTrailerListAction(this.selectedMovieId));
+            }
+        }
+        else {
+            mRecyclerView.setVisibility(View.GONE);
+            emptyTrailersMessage.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -89,7 +105,21 @@ public class TrailersFragment extends Fragment implements TrailerItemClickListen
     }
 
     public void setSelectedMovieId(int selectedMovieId) {
+
         this.selectedMovieId = selectedMovieId;
+    }
+
+    private void saveSelectedMovieIdInSharedPreferences() {
+        SharedPreferences pref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = pref.edit();
+
+        prefsEditor.putInt("SELECTED_MOVIE_ID",this.selectedMovieId);
+        prefsEditor.commit();
+    }
+
+    private void loadSelectedMovieIdInSharedPreferences() {
+        SharedPreferences mPrefs = this.getActivity().getPreferences(Context.MODE_PRIVATE);
+        this.selectedMovieId = mPrefs.getInt("SELECTED_MOVIE_ID",0);
     }
 
     @Subscribe
@@ -127,5 +157,12 @@ public class TrailersFragment extends Fragment implements TrailerItemClickListen
         sendIntent.putExtra(Intent.EXTRA_TEXT, "http://www.youtube.com/watch?v="+trailer.getKey());
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

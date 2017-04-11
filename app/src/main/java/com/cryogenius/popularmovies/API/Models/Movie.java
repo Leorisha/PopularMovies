@@ -54,6 +54,10 @@ public class Movie implements Parcelable {
     @Expose
     private double voteAverage;
 
+    public Movie() {
+
+    }
+
     public String getPosterPath() {
         return posterPath;
     }
@@ -202,7 +206,7 @@ public class Movie implements Parcelable {
         }
     };
 
-    private Movie(Parcel in) {
+    public Movie(Parcel in) {
         posterPath = in.readString();
         adult =in.readByte() != 0;
         overview = in.readString();

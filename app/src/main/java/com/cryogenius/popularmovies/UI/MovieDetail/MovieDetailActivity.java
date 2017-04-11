@@ -28,6 +28,7 @@ import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by Ana Neto on 26/01/2017.
@@ -88,28 +89,17 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
                     ContentValues cv = new ContentValues();
                     cv.put(FavoriteMovieEntry._ID,selectedMovie.getId());
                     cv.put(FavoriteMovieEntry.TITLE,selectedMovie.getTitle());
+                    cv.put(FavoriteMovieEntry.POSTER,selectedMovie.getPosterPath());
+                    cv.put(FavoriteMovieEntry.DATE,selectedMovie.getReleaseDate());
+                    cv.put(FavoriteMovieEntry.RATING,selectedMovie.getVoteAverage());
+                    cv.put(FavoriteMovieEntry.SYNOPSIS,selectedMovie.getOverview());
 
                     ContentResolver resolver = getContentResolver();
                     resolver.insert(FavoriteMoviesContentProvider.FavoriteMovies.FAVORITE_MOVIES,cv);
-
-                    Cursor c = getApplicationContext().getContentResolver().query(FavoriteMoviesContentProvider.FavoriteMovies.FAVORITE_MOVIES,
-                            null, null, null, null);
-                    Log.i("LOG", "cursor count: " + c.getCount());
-                    if (c == null || c.getCount() == 0){
-                    }
-
                 }
                 else {
 
                     getContentResolver().delete(FavoriteMoviesContentProvider.FavoriteMovies.withId(selectedMovie.getId()),null,null);
-
-                    Cursor c = getApplicationContext().getContentResolver().query(FavoriteMoviesContentProvider.FavoriteMovies.FAVORITE_MOVIES,
-                            null, null, null, null);
-                    Log.i("LOG", "cursor count: " + c.getCount());
-                    if (c == null || c.getCount() == 0){
-                    }
-
-
                     favoriteButton.setSelected(false);
                     favoriteButton.setImageDrawable( getResources().getDrawable(R.drawable.ic_favorite_unselected));
                 }
@@ -160,6 +150,8 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
                 }
             });
 
+            viewPager.setCurrentItem(this.selectedTabIndex);
+
             //EventBus.getInstance().post(new GetMovieDetailAction(this.selectedIndex));
         } else {
             //TODO: display error
@@ -176,49 +168,74 @@ public class MovieDetailActivity extends AppCompatActivity implements TabLayout.
     public void onMovieDetailEvent(final MovieDetailEvent event) {
         if (event.getSelectedMovie() != null) {
 
-            Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
-            setSupportActionBar(toolbar);
-            ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayHomeAsUpEnabled(true);
-
             selectedMovie = event.getSelectedMovie();
-
-            Cursor c = getContentResolver().query(FavoriteMoviesContentProvider.FavoriteMovies.withId(selectedMovie.getId()),null,null,null,null);
-
-            if (c.getCount() > 0) {
-                favoriteButton.setSelected(true);
-                favoriteButton.setImageDrawable( getResources().getDrawable(R.drawable.ic_favorite_selected));
-            }
-            else {
-                favoriteButton.setSelected(false);
-                favoriteButton.setImageDrawable( getResources().getDrawable(R.drawable.ic_favorite_unselected));
-            }
-
-            collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
-            collapsingToolbarLayout.setTitle(event.getSelectedMovie().getOriginalTitle());
-            actionBar.setTitle(event.getSelectedMovie().getOriginalTitle());
-
-            Context context = moviePoster.getContext();
-
-            String posterURL = context.getString(R.string.image_url_detail) + event.getSelectedMovie().getPosterPath();
-            Picasso.with(context).load(posterURL).into(moviePoster);
-
-            if (viewAdapter != null){
-                if (this.selectedTabIndex >= 0) {
-                    TabLayout.Tab tab = tabLayout.getTabAt(this.selectedTabIndex);
-                    tab.select();
-                }
-                else {
-                    viewAdapter.setSelectedId(event.getSelectedMovie().getId());
-                    viewAdapter.notifyDataSetChanged();
-                    viewPager.invalidate();
-
-                }
-
-            }
+            setDetail();
 
         } else {
-            //TODO: error
+            Cursor c = getContentResolver().query(FavoriteMoviesContentProvider.
+                    FavoriteMovies.FAVORITE_MOVIES,null,null,null,null);
+            if (c.getCount() > 0) {
+                buildMovieFromFavoriteRecord(c);
+                setDetail();
+            }
+            else {
+                //TODO: error
+            }
+        }
+    }
+
+    private void buildMovieFromFavoriteRecord(Cursor c){
+        if (c.move(this.selectedIndex+1) || (this.selectedIndex == 0 && c.moveToFirst())){
+            Movie favoriteMovie = new Movie();
+            favoriteMovie.setId(c.getInt(0));
+            favoriteMovie.setTitle(c.getString(1));
+            favoriteMovie.setPosterPath(c.getString(2));
+            favoriteMovie.setOverview(c.getString(3));
+            favoriteMovie.setVoteAverage(c.getInt(4));
+            favoriteMovie.setReleaseDate(c.getString(5));
+
+            selectedMovie = favoriteMovie;
+        }
+    }
+
+    private void setDetail(){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        Cursor c = getContentResolver().query(FavoriteMoviesContentProvider.FavoriteMovies.withId(selectedMovie.getId()),null,null,null,null);
+
+        if (c.getCount() > 0) {
+            favoriteButton.setSelected(true);
+            favoriteButton.setImageDrawable( getResources().getDrawable(R.drawable.ic_favorite_selected));
+        }
+        else {
+            favoriteButton.setSelected(false);
+            favoriteButton.setImageDrawable( getResources().getDrawable(R.drawable.ic_favorite_unselected));
+        }
+
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
+        collapsingToolbarLayout.setTitle(selectedMovie.getOriginalTitle());
+        actionBar.setTitle(selectedMovie.getOriginalTitle());
+
+        Context context = moviePoster.getContext();
+
+        String posterURL = context.getString(R.string.image_url_detail) + selectedMovie.getPosterPath();
+        Picasso.with(context).load(posterURL).into(moviePoster);
+
+        if (viewAdapter != null){
+            if (this.selectedTabIndex >= 0) {
+                TabLayout.Tab tab = tabLayout.getTabAt(this.selectedTabIndex);
+                tab.select();
+            }
+            else {
+                viewAdapter.setSelectedId(selectedMovie.getId());
+                viewAdapter.notifyDataSetChanged();
+                viewPager.invalidate();
+
+            }
+
         }
     }
 
